@@ -1,0 +1,41 @@
+# needed to securely identify the workflow
+name: autofix.ci
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          cache: true
+          install: false
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 📦 Install browsers
+        run: pnpm playwright install
+
+      - name: 🔠 Fix lint errors
+        run: pnpm lint --fix
+
+      - name: 🧪 Update unit test snapshots
+        run: pnpm test:unit -u
+
+      - name: 🏃 Update component test snapshots
+        run: pnpm test:nuxt -u
+
+      - name: 🖥️ Update browser test snapshots
+        run: pnpm test:browser --update-snapshots
+
+      - uses: autofix-ci/action@635ffb0c9798bd160680f18fd73371e355b85f27 # 635ffb0c9798bd160680f18fd73371e355b85f27
