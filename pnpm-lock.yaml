@@ -185,6 +185,7 @@ patchedDependencies:
   '@nuxt/cli-nightly': 7f35b7accc76cac25e0ebf3c364e92b012f94c2f63052300b4b785024c07fa1b
   '@nuxt/devtools-onboard@4.2.0': 9604afc3ba68cb457843da84e4d3496d2c35811697f750fde1f696a7e1730606
   '@nuxt/devtools@4.2.0': 3fd30f1ae8d96c948dad049a3a932aa7f81b626204b2c6e70528b893ea4d7174
+  '@nuxt/vite-server-nightly': acabce376b2b72d26a6d5b79dd8edfc7ff6ca1d6e2a15cbce7988d0d2bc144a2
   fontless@1.3.4: 85851e259e909005953983917f97d424762e29c3f82d6befbdc125404fa4b583
 
 importers:
@@ -5844,7 +5845,7 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@nuxt/vite-server-nightly@5.0.0-2611231239-1986580(@nuxt/schema-nightly@5.0.0-2611231239-1986580)(confbox@0.3.2)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.5)(mlly@1.8.2)(nuxt-nightly@5.0.0-2611231239-1986580(c46722a50f6566d08ac58249d5d8ef7c))(oxc-parser@0.143.0)(rolldown@1.2.19)(unplugin@3.7.0(esbuild@0.28.2)(rolldown@1.2.19)(rollup@4.62.4)(vite@8.3.8))(vite@8.3.8)':
+  '@nuxt/vite-server-nightly@5.0.0-2611231239-1986580(patch_hash=acabce376b2b72d26a6d5b79dd8edfc7ff6ca1d6e2a15cbce7988d0d2bc144a2)(@nuxt/schema-nightly@5.0.0-2611231239-1986580)(confbox@0.3.2)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.5)(mlly@1.8.2)(nuxt-nightly@5.0.0-2611231239-1986580(c46722a50f6566d08ac58249d5d8ef7c))(oxc-parser@0.143.0)(rolldown@1.2.19)(unplugin@3.7.0(esbuild@0.28.2)(rolldown@1.2.19)(rollup@4.62.4)(vite@8.3.8))(vite@8.3.8)':
     dependencies:
       '@nuxt/kit': '@nuxt/kit-nightly@5.0.0-2611231239-1986580(@nuxt/schema-nightly@5.0.0-2611231239-1986580)(confbox@0.3.2)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.5)(mlly@1.8.2)(oxc-parser@0.143.0)(rolldown@1.2.19)(unplugin@3.7.0(esbuild@0.28.2)(rolldown@1.2.19)(rollup@4.62.4)(vite@8.3.8))'
       defu: 6.1.7
@@ -7978,7 +7979,7 @@ snapshots:
       '@nuxt/schema': '@nuxt/schema-nightly@5.0.0-2611231239-1986580'
       '@nuxt/telemetry': 2.9.1(@nuxt/kit-nightly@5.0.0-2611231239-1986580(@nuxt/schema-nightly@5.0.0-2611231239-1986580)(confbox@0.3.2)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.5)(mlly@1.8.2)(oxc-parser@0.143.0)(rolldown@1.2.19)(unplugin@3.7.0(esbuild@0.28.2)(rolldown@1.2.19)(rollup@4.62.4)(vite@8.3.8)))
       '@nuxt/vite-builder': '@nuxt/vite-builder-nightly@5.0.0-2611231239-1986580(@babel/plugin-syntax-jsx@7.29.7(@babel/core@7.29.7(supports-color@7.2.0)))(@nuxt/schema-nightly@5.0.0-2611231239-1986580)(@types/node@26.2.0)(@vitejs/devtools@0.8.3)(@vitejs/plugin-vue-jsx@5.1.6(supports-color@7.2.0)(vite@8.3.8)(vue@3.5.46(typescript@6.0.3)))(autoprefixer@10.5.4(postcss@8.5.33))(confbox@0.3.2)(cssnano@8.0.5(postcss@8.5.33))(dotenv@17.4.2)(esbuild@0.28.2)(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.5)(mlly@1.8.2)(nuxt-nightly@5.0.0-2611231239-1986580(c46722a50f6566d08ac58249d5d8ef7c))(optionator@0.9.4)(oxc-parser@0.143.0)(rolldown@1.2.19)(rollup-plugin-visualizer@7.1.1(rolldown@1.2.19)(rollup@4.62.4))(terser@5.50.0)(typescript@6.0.3)(unplugin@3.7.0(esbuild@0.28.2)(rolldown@1.2.19)(rollup@4.62.4)(vite@8.3.8))(vue-tsc@3.3.11(typescript@6.0.3))(vue@3.5.46(typescript@6.0.3))(yaml@2.9.0)'
-      '@nuxt/vite-server': '@nuxt/vite-server-nightly@5.0.0-2611231239-1986580(@nuxt/schema-nightly@5.0.0-2611231239-1986580)(confbox@0.3.2)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.5)(mlly@1.8.2)(nuxt-nightly@5.0.0-2611231239-1986580(c46722a50f6566d08ac58249d5d8ef7c))(oxc-parser@0.143.0)(rolldown@1.2.19)(unplugin@3.7.0(esbuild@0.28.2)(rolldown@1.2.19)(rollup@4.62.4)(vite@8.3.8))(vite@8.3.8)'
+      '@nuxt/vite-server': '@nuxt/vite-server-nightly@5.0.0-2611231239-1986580(patch_hash=acabce376b2b72d26a6d5b79dd8edfc7ff6ca1d6e2a15cbce7988d0d2bc144a2)(@nuxt/schema-nightly@5.0.0-2611231239-1986580)(confbox@0.3.2)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.5)(mlly@1.8.2)(nuxt-nightly@5.0.0-2611231239-1986580(c46722a50f6566d08ac58249d5d8ef7c))(oxc-parser@0.143.0)(rolldown@1.2.19)(unplugin@3.7.0(esbuild@0.28.2)(rolldown@1.2.19)(rollup@4.62.4)(vite@8.3.8))(vite@8.3.8)'
       '@unhead/vue': 3.4.3(@oxc-project/types@0.156.0)(esbuild@0.28.2)(lightningcss@1.33.0)(oxc-parser@0.143.0)(rolldown@1.2.19)(rollup@4.62.4)(vite@8.3.8)(vue@3.5.46(typescript@6.0.3))
       '@vue/shared': 3.5.46
       chokidar: 6.0.0

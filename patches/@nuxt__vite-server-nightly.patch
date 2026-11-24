@@ -1,0 +1,24 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 0b818af4ed17dd3af3b3ab66a875bbe11a4b3df6..672086dfda7421bdc6e14a30539dc9bd83e5d763 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -964,6 +964,19 @@ function BuildEnvironmentsPlugin(nuxt) {
+ 				const ssr = builder.environments.ssr;
+ 				const client = builder.environments.client;
+ 				if (ssr && nuxt.options.ssr === false && !rendersSpaDocument(nuxt)) ssr.isBuilt = true;
++				if (nuxt.options.experimental.parallelBuild && !rendersSpaDocument(nuxt) && client && ssr && !client.isBuilt && !ssr.isBuilt) {
++					const clientBuild = builder.build(client);
++					const clientBuilt = clientBuild.then(() => {});
++					clientBuilt.catch(() => {});
++					nuxt._clientBuild = clientBuilt;
++					try {
++						const results = await Promise.allSettled([clientBuild, builder.build(ssr)]);
++						for (const result of results) if (result.status === "rejected") throw result.reason;
++					} finally {
++						nuxt._clientBuild = void 0;
++					}
++					return;
++				}
+ 				for (const environment of rendersSpaDocument(nuxt) ? [ssr, client] : [client, ssr]) if (environment && !environment.isBuilt) await builder.build(environment);
+ 			}
+ 		}
