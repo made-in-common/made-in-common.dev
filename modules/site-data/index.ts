@@ -26,12 +26,19 @@ export default defineNuxtModule({
     const logger = useLogger('site-data')
     const contentDir = resolve(nuxt.options.rootDir, 'content')
     let github: Promise<{ data: GitHubData, savedAt: number }> | undefined
+    const offline = nuxt.options._prepare || nuxt.options.test || process.env.SITE_DATA_OFFLINE === 'true'
+    const strict = !nuxt.options.dev
+    const token = process.env.GITHUB_TOKEN
+
+    if (strict && !offline && !token) {
+      throw new Error('GITHUB_TOKEN is required for production builds. Set SITE_DATA_OFFLINE=true to build with the project list in shared/projects.ts instead.')
+    }
 
     async function fetchGitHub() {
       let complete = true
       const options = {
-        token: process.env.GITHUB_TOKEN || process.env.NUXT_GITHUB_TOKEN,
-        strict: !nuxt.options.dev,
+        token,
+        strict,
         warn: (message: string) => logger.warn(message),
         onFailure: () => { complete = false },
       }
@@ -41,7 +48,7 @@ export default defineNuxtModule({
     }
 
     async function loadGitHub() {
-      if (nuxt.options._prepare || nuxt.options.test || process.env.SITE_DATA_OFFLINE === 'true') {
+      if (offline) {
         return { data: { projects: projects.map(source => toProject(source)), docs: {}, sponsors: [] }, savedAt: Date.now() }
       }
       return cached<GitHubData>({

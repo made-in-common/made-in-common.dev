@@ -10,7 +10,7 @@ It is a fully static Nuxt site. The project list is read from the public reposit
 pnpm install
 ```
 
-Set `GITHUB_TOKEN` to a token that can read organisation members. Production builds fail without project data. Dev builds fall back to the list in `shared/projects.ts` when GitHub cannot be read. Tests always use that list and never fetch from GitHub. Set `SITE_DATA_OFFLINE=true` to do the same for any other build.
+Set `GITHUB_TOKEN` to a token that can read organisation members. Production builds fail without it, or when project data cannot be read. Dev builds fall back to the list in `shared/projects.ts` when GitHub cannot be read. Tests always use that list and never fetch from GitHub. Set `SITE_DATA_OFFLINE=true` to do the same for any other build.
 
 ```bash
 export GITHUB_TOKEN=$(gh auth token)
