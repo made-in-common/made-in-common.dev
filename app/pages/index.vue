@@ -671,12 +671,12 @@ useHead({
   align-items: center;
   min-height: 2.75rem;
   font-size: 0.9375rem;
-  border-bottom: 3px solid transparent;
+  box-shadow: inset 0 -3px transparent;
 }
 
 .sort input:checked + span {
   font-weight: 700;
-  border-bottom-color: var(--signal);
+  box-shadow: inset 0 -3px var(--signal);
 }
 
 .wall-section {
@@ -1057,7 +1057,8 @@ useHead({
   }
 
   .sort input:checked + span {
-    border-bottom-color: Highlight;
+    text-decoration: underline 3px;
+    text-underline-offset: 0.35em;
   }
 }
 
