@@ -145,6 +145,9 @@ async function clearFilters() {
 
 useSeoMeta({
   title: 'Made in Common: open source tools for the web, looked after together',
+})
+
+useServerSeoMeta({
   description: 'A home for open source tools made for the web. Most began with one person, and all are now looked after together.',
   ogTitle: 'Made in Common',
   ogDescription: 'Open source tools for the web, looked after together.',
@@ -155,7 +158,7 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-useHead({
+useServerHead({
   link: [{ rel: 'canonical', href: 'https://made-in-common.dev/' }],
 })
 </script>
