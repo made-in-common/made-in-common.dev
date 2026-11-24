@@ -12,6 +12,8 @@ export default defineConfig({
   use: {
     baseURL: `http://127.0.0.1:${port}`,
     trace: 'on-first-retry',
+    // Headless Linux otherwise hints glyphs to whole-pixel advances, unlike other platforms.
+    launchOptions: { args: ['--font-render-hinting=none'] },
   },
   webServer: {
     command: `pnpm generate && pnpm preview --port ${port}`,

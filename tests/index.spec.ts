@@ -78,3 +78,25 @@ test('inlines the stylesheets', async ({ page, request }) => {
   await page.waitForLoadState('networkidle')
   expect(stylesheets).toEqual([])
 })
+
+test('keeps the layout stable when the web font loads late', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.route('**/*.woff2', async (route) => {
+    await new Promise(resolve => setTimeout(resolve, 500))
+    await route.continue()
+  })
+  await page.reload()
+  await page.waitForLoadState('networkidle')
+  await page.evaluate(() => document.fonts.ready)
+
+  const shift = await page.evaluate(() => new Promise<number>((resolve) => {
+    let total = 0
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        total += (entry as PerformanceEntry & { value: number }).value
+      }
+    }).observe({ type: 'layout-shift', buffered: true })
+    setTimeout(() => resolve(total), 250)
+  }))
+  expect(shift).toBeLessThan(0.01)
+})
