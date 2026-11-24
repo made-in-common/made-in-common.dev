@@ -70,6 +70,7 @@ useSeoMeta({
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
+  min-height: 100dvh;
   grid-template-rows: auto 1fr auto;
 }
 
@@ -136,6 +137,7 @@ useSeoMeta({
 
 .doc__body {
   max-width: 44rem;
+  overflow-wrap: break-word;
 }
 
 .doc__body :deep(h1) {
@@ -202,6 +204,17 @@ useSeoMeta({
 .doc__body :deep(code) {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.9em;
+}
+
+.doc__body :deep(pre) {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.doc__body :deep(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 @media (min-width: 64rem) {

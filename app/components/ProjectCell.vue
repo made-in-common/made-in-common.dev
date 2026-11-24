@@ -44,6 +44,7 @@ const titleId = computed(() => `project-${props.project.name}`)
     </p>
     <ul
       class="cell__maintainers"
+      role="list"
       aria-label="Maintainers"
     >
       <li

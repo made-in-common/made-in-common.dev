@@ -70,6 +70,8 @@ onMounted(() => {
 })
 
 const maintainerChip = useTemplateRef<HTMLButtonElement>('maintainerChip')
+const maintainerHint = useTemplateRef<HTMLParagraphElement>('maintainerHint')
+const wallSection = useTemplateRef<HTMLElement>('wallSection')
 
 async function selectMaintainer(handle: string) {
   maintainer.value = handle
@@ -78,10 +80,18 @@ async function selectMaintainer(handle: string) {
   maintainerChip.value?.focus()
 }
 
-function clearFilters() {
+async function removeMaintainer() {
+  maintainer.value = undefined
+  await nextTick()
+  maintainerHint.value?.focus()
+}
+
+async function clearFilters() {
   query.value = ''
   category.value = undefined
   maintainer.value = undefined
+  await nextTick()
+  wallSection.value?.focus()
 }
 
 useSeoMeta({
@@ -189,7 +199,7 @@ useHead({
                 ref="maintainerChip"
                 type="button"
                 class="filter-chip"
-                @click="maintainer = undefined"
+                @click="removeMaintainer"
               >
                 <img
                   class="filter-chip__avatar"
@@ -215,7 +225,9 @@ useHead({
               >Sponsor {{ maintainer }} on GitHub</a>
               <p
                 v-else
+                ref="maintainerHint"
                 class="field__hint"
+                tabindex="-1"
               >
                 Choose a name on any project to see everything they look after.
               </p>
@@ -256,6 +268,7 @@ useHead({
 
       <main
         id="projects"
+        ref="wallSection"
         class="wall-section"
         tabindex="-1"
       >
@@ -274,6 +287,7 @@ useHead({
         <ul
           v-if="results.length"
           class="wall"
+          role="list"
         >
           <li
             v-for="(project, index) in results"
@@ -373,6 +387,7 @@ useHead({
         />
         <ul
           class="sponsors"
+          role="list"
           aria-label="Maintainers on GitHub Sponsors"
         >
           <li
@@ -439,6 +454,7 @@ useHead({
 }
 
 .rail {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   gap: 1.75rem;
@@ -452,7 +468,7 @@ useHead({
 }
 
 .masthead__title {
-  font-size: clamp(2.75rem, 6.5vw, 6rem);
+  font-size: min(clamp(2.75rem, 6.5vw, 6rem), 22cqi);
   font-weight: 800;
   line-height: 0.88;
   letter-spacing: -0.035em;
@@ -509,7 +525,8 @@ useHead({
 }
 
 .field__input:focus-visible {
-  outline: none;
+  outline: 3px solid transparent;
+  outline-offset: 2px;
   border-bottom-color: var(--signal);
   box-shadow: 0 3px 0 var(--signal);
 }
@@ -638,6 +655,7 @@ useHead({
 
 .field__hint {
   max-width: 32ch;
+  outline: none;
   font-size: 0.9375rem;
   line-height: 1.4;
   color: var(--muted);
@@ -898,21 +916,6 @@ useHead({
   outline-color: var(--inverse-fg);
 }
 
-@media (max-width: 63.99rem) {
-  .choice__options:not(.choice__options--inline) {
-    flex-wrap: nowrap;
-    margin-inline: calc(-1 * var(--gutter));
-    padding: 4px var(--gutter);
-    overflow-x: auto;
-    scroll-padding-inline: var(--gutter);
-    scrollbar-width: none;
-  }
-
-  .chip {
-    flex: none;
-  }
-}
-
 @media (min-width: 64rem) {
   .rail__nav {
     display: flex;
@@ -927,6 +930,7 @@ useHead({
     top: 0;
     align-self: start;
     max-height: 100vh;
+    max-height: 100dvh;
     overflow-y: auto;
     border-bottom: 0;
   }
@@ -942,6 +946,19 @@ useHead({
 
   .band__title {
     padding-right: var(--gutter);
+  }
+}
+
+@media (forced-colors: active) {
+  .chip input:checked + span {
+    forced-color-adjust: none;
+    background: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+  }
+
+  .sort input:checked + span {
+    border-bottom-color: Highlight;
   }
 }
 

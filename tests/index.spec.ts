@@ -30,6 +30,7 @@ test('filters by search, category and maintainer and keeps the filter in the URL
   await expect(page.getByText('No projects match these filters.')).toBeVisible()
   await page.getByRole('button', { name: 'Clear filters' }).click()
   await expect(status).toHaveText('9 projects')
+  await expect(page.getByRole('main')).toBeFocused()
 
   await page.getByRole('radio', { name: /Fonts & CSS/ }).check({ force: true })
   await expect(status).toHaveText('2 of 9 projects')
@@ -51,6 +52,7 @@ test('filters by search, category and maintainer and keeps the filter in the URL
   await chip.click()
   await expect(status).toHaveText('9 projects')
   await expect(chip).toBeHidden()
+  await expect(page.getByText('Choose a name on any project')).toBeFocused()
 })
 
 test('restores filters from the URL', async ({ page }) => {

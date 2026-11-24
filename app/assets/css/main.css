@@ -70,6 +70,13 @@ fieldset {
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
+}
+
+h1,
+h2,
+h3 {
+  overflow-wrap: break-word;
 }
 
 ::selection {
