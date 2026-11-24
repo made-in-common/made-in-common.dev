@@ -32,6 +32,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   experimental: {
     typedPages: true,
+    viewTransition: true,
   },
   compatibilityDate: '2025-09-03',
   nitro: {

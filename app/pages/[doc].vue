@@ -101,6 +101,7 @@ useSeoMeta({
 }
 
 .home__logo {
+  view-transition-name: site-logo;
   width: 3rem;
 }
 
