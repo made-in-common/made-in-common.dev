@@ -14,6 +14,8 @@ const shapes = computed(() => createMark(props.name))
     class="mark"
     :class="{ 'mark--ghost': ghost }"
     :viewBox="`0 0 ${MARK_SIZE} ${MARK_SIZE}`"
+    :width="MARK_SIZE"
+    :height="MARK_SIZE"
     aria-hidden="true"
     focusable="false"
   >
