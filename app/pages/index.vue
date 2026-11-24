@@ -90,11 +90,27 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', updateRailTop)
 })
 
+let clearPreviewTimer: ReturnType<typeof setTimeout> | undefined
+
+function setPreview(handle: string | undefined) {
+  clearTimeout(clearPreviewTimer)
+  if (handle) {
+    preview.value = handle
+    return
+  }
+  clearPreviewTimer = setTimeout(() => {
+    preview.value = undefined
+  }, 80)
+}
+
+onBeforeUnmount(() => clearTimeout(clearPreviewTimer))
+
 const maintainerChip = useTemplateRef<HTMLButtonElement>('maintainerChip')
 const maintainerHint = useTemplateRef<HTMLParagraphElement>('maintainerHint')
 const wallSection = useTemplateRef<HTMLElement>('wallSection')
 
 async function selectMaintainer(handle: string) {
+  clearTimeout(clearPreviewTimer)
   maintainer.value = handle
   preview.value = undefined
   await nextTick()
@@ -324,7 +340,8 @@ useHead({
               :lead="index === 0"
               :highlighted="!!preview && project.maintainers.includes(preview)"
               :dimmed="!!preview && !project.maintainers.includes(preview)"
-              @preview="preview = $event"
+              :preview="preview"
+              @preview="setPreview"
               @select="selectMaintainer"
             />
           </li>

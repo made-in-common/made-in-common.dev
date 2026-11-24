@@ -37,6 +37,12 @@ describe('ProjectCell', () => {
     expect(wrapper.get('.cell__maintainers').text()).toContain('Looking for maintainers')
   })
 
+  it('should mark the previewed maintainer', async () => {
+    const wrapper = await mountSuspended(ProjectCell, { props: { project, preview: 'sxzz' } })
+
+    expect(wrapper.findAll('button.maintainer').map(button => button.classes('maintainer--active'))).toEqual([false, true])
+  })
+
   it('should emit preview and select for a maintainer', async () => {
     const onPreview = vi.fn()
     const onSelect = vi.fn()
