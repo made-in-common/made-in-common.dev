@@ -1,8 +1,8 @@
-# Nuxt Site Template
+# made-in-common.dev
 
-A starting point for a Nuxt 4 site, with linting, type checking, unit/component tests (Vitest) and browser tests (Playwright) already configured.
+The website for [Made in Common](https://github.com/made-in-common): open source tools for the web, looked after together.
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+It is a fully static Nuxt site. The project list is read from the public repositories in the organisation at build time, along with each project's description, stars and last push. The maintainers of `made-in-common/<repo>` are the members of the organisation team with the same name as the repository.
 
 ## Setup
 
@@ -10,13 +10,26 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 pnpm install
 ```
 
-## Development
+Set `GITHUB_TOKEN` to a token that can read organisation members. Production builds fail without project data. Dev and test builds fall back to the list in `shared/projects.ts`.
 
-Start the development server on `http://localhost:3000`:
+```bash
+export GITHUB_TOKEN=$(gh auth token)
+```
+
+Outside CI, GitHub data is cached in `node_modules/.cache/site-data` for an hour. Set `SITE_DATA_CACHE=false` to fetch it again.
+
+## Development
 
 ```bash
 pnpm dev
 ```
+
+## Content
+
+- `shared/projects.ts`: the category and npm name of each project, matched by repository name. Projects not yet in the organisation are listed from here, with their maintainers.
+- `content/*.md`: the about, principles and join copy
+- `GOVERNANCE.md` and `CODE_OF_CONDUCT.md` in [`made-in-common/.github`](https://github.com/made-in-common/.github) are rendered at `/governance` and `/code-of-conduct`. A page and its footer link are left out until the file exists.
+- `scripts/og.ts`: renders `public/og.png` (run `pnpm og` after changing the project list)
 
 ## Testing
 
@@ -25,20 +38,12 @@ pnpm lint          # eslint
 pnpm test:types    # vue-tsc
 pnpm test:unit     # vitest, node environment
 pnpm test:nuxt     # vitest, nuxt environment
-pnpm test:browser  # playwright
-```
-
-Browser snapshots are platform-specific, so update them inside the Playwright container:
-
-```bash
-pnpm test:browser:update
+pnpm test:browser  # playwright, against the generated site
 ```
 
 ## Production
 
 ```bash
-pnpm build     # build for production
-pnpm preview   # preview the production build locally
+pnpm generate  # writes the static site to .output/public
+pnpm preview   # serves it locally
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

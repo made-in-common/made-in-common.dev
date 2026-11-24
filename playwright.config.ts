@@ -1,8 +1,8 @@
-import { fileURLToPath } from 'node:url'
 import { defineConfig, devices } from '@playwright/test'
-import type { ConfigOptions } from '@nuxt/test-utils/playwright'
 
-export default defineConfig<ConfigOptions>({
+const port = 4173
+
+export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -10,10 +10,14 @@ export default defineConfig<ConfigOptions>({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
+    baseURL: `http://127.0.0.1:${port}`,
     trace: 'on-first-retry',
-    nuxt: {
-      rootDir: fileURLToPath(new URL('.', import.meta.url)),
-    },
+  },
+  webServer: {
+    command: `pnpm generate && pnpm preview --port ${port}`,
+    url: `http://127.0.0.1:${port}`,
+    reuseExistingServer: !process.env.CI,
+    timeout: 180_000,
   },
   projects: [
     {

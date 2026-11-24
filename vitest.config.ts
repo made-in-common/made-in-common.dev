@@ -21,9 +21,6 @@ export default defineConfig({
           environmentOptions: {
             nuxt: {
               rootDir: fileURLToPath(new URL('.', import.meta.url)),
-              overrides: {
-                ogImage: { enabled: false },
-              },
             },
           },
           browser: {

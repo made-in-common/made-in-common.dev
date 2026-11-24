@@ -1,0 +1,3 @@
+- **Looked after together.** Every project has at least two maintainers who can review, merge and release.
+- **You're welcome here.** Building together is what open source is about. Questions, bug reports and pull requests are appreciated, from anyone.
+- **One code of conduct.** It applies to everyone, maintainers included.

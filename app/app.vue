@@ -1,13 +1,9 @@
 <script setup lang="ts">
-defineOgImage('NuxtSeoTakumi')
+import { preloads } from 'fontless/runtime'
 
-useSeoMeta({
-  title: 'Nuxt Starter',
-})
+useHead({ link: preloads.map(link => ({ ...link, crossorigin: link.crossorigin ?? 'anonymous' })) })
 </script>
 
 <template>
-  <div>
-    <NuxtPage />
-  </div>
+  <NuxtPage />
 </template>

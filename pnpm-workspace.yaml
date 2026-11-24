@@ -1,6 +1,12 @@
 allowBuilds:
   '@parcel/watcher': false
   esbuild: false
-  sharp: true
   simple-git-hooks: true
   unrs-resolver: false
+minimumReleaseAgeExclude:
+  - '@nuxt/kit-nightly@5.0.0-2611221443-187e8c3'
+  - '@nuxt/nitro-server-nightly@5.0.0-2611221443-187e8c3'
+  - '@nuxt/schema-nightly@5.0.0-2611221443-187e8c3'
+  - '@nuxt/vite-builder-nightly@5.0.0-2611221443-187e8c3'
+  - '@nuxt/vite-server-nightly@5.0.0-2611221443-187e8c3'
+  - nuxt-nightly@5.0.0-2611221443-187e8c3
