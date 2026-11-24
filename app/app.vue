@@ -6,4 +6,5 @@ useHead({ link: preloads.map(link => ({ ...link, crossorigin: link.crossorigin ?
 
 <template>
   <NuxtPage />
+  <SiteLoader />
 </template>
