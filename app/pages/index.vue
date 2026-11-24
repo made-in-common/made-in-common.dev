@@ -147,20 +147,22 @@ useSeoMeta({
   title: 'Made in Common: open source tools for the web, looked after together',
 })
 
-useServerSeoMeta({
-  description: 'A home for open source tools made for the web. Most began with one person, and all are now looked after together.',
-  ogTitle: 'Made in Common',
-  ogDescription: 'Open source tools for the web, looked after together.',
-  ogImage: 'https://made-in-common.dev/og.png',
-  ogUrl: 'https://made-in-common.dev/',
-  ogImageWidth: 1200,
-  ogImageHeight: 630,
-  twitterCard: 'summary_large_image',
-})
+if (import.meta.server) {
+  useSeoMeta({
+    description: 'A home for open source tools made for the web. Most began with one person, and all are now looked after together.',
+    ogTitle: 'Made in Common',
+    ogDescription: 'Open source tools for the web, looked after together.',
+    ogImage: 'https://made-in-common.dev/og.png',
+    ogUrl: 'https://made-in-common.dev/',
+    ogImageWidth: 1200,
+    ogImageHeight: 630,
+    twitterCard: 'summary_large_image',
+  })
 
-useServerHead({
-  link: [{ rel: 'canonical', href: 'https://made-in-common.dev/' }],
-})
+  useHead({
+    link: [{ rel: 'canonical', href: 'https://made-in-common.dev/' }],
+  })
+}
 </script>
 
 <template>

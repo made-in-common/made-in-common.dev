@@ -73,6 +73,15 @@ body {
   min-height: 100dvh;
 }
 
+/* Set by an inline script until Archivo has loaded or 500ms have passed. */
+.font-pending body {
+  visibility: hidden;
+}
+
+.font-pending body * {
+  animation-play-state: paused !important;
+}
+
 h1,
 h2,
 h3 {

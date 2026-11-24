@@ -1,4 +1,29 @@
 import { expect, test } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
+async function reloadWithFontDelay(page: Page, delay: number) {
+  await page.route('**/*.woff2', async (route) => {
+    await new Promise(resolve => setTimeout(resolve, delay))
+    await route.continue()
+  })
+  await page.reload()
+  await page.waitForLoadState('networkidle')
+  await page.evaluate(() => document.fonts.ready)
+
+  return page.evaluate(() => new Promise<{ shift: number, paint: number, font: number }>((resolve) => {
+    let shift = 0
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        shift += (entry as PerformanceEntry & { value: number }).value
+      }
+    }).observe({ type: 'layout-shift', buffered: true })
+    setTimeout(() => resolve({
+      shift,
+      paint: performance.getEntriesByName('first-contentful-paint')[0]!.startTime,
+      font: (performance.getEntriesByType('resource').find(entry => entry.name.endsWith('.woff2')) as PerformanceResourceTiming).responseEnd,
+    }), 250)
+  }))
+}
 
 test.beforeEach(async ({ page }) => {
   const errors: string[] = []
@@ -66,7 +91,7 @@ test('inlines the stylesheets', async ({ page, request }) => {
   const html = await (await request.get('/')).text()
   const inlined = html.match(/<style>(.*?)<\/style>/s)?.[1]
   expect(inlined).toContain('.masthead')
-  expect(inlined).toContain('archivo-latin.woff2')
+  expect(inlined).toMatch(/@font-face\{font-family:Archivo;[^}]*\/_nuxt\/_fonts\/[\w-]+\.woff2/)
 
   const stylesheets: string[] = []
   page.on('request', (request) => {
@@ -79,24 +104,16 @@ test('inlines the stylesheets', async ({ page, request }) => {
   expect(stylesheets).toEqual([])
 })
 
-test('keeps the layout stable when the web font loads late', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 })
-  await page.route('**/*.woff2', async (route) => {
-    await new Promise(resolve => setTimeout(resolve, 500))
-    await route.continue()
-  })
-  await page.reload()
-  await page.waitForLoadState('networkidle')
-  await page.evaluate(() => document.fonts.ready)
+test('waits for the web font before the first paint', async ({ page }) => {
+  const { paint, font, shift } = await reloadWithFontDelay(page, 250)
+  expect(paint).toBeGreaterThanOrEqual(font)
+  expect(shift).toBe(0)
+})
 
-  const shift = await page.evaluate(() => new Promise<number>((resolve) => {
-    let total = 0
-    new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        total += (entry as PerformanceEntry & { value: number }).value
-      }
-    }).observe({ type: 'layout-shift', buffered: true })
-    setTimeout(() => resolve(total), 250)
-  }))
+test('paints with the fallback font after 500ms and keeps the layout stable', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  const { paint, font, shift } = await reloadWithFontDelay(page, 1500)
+  expect(paint).toBeLessThan(font)
+  expect(paint).toBeLessThan(1000)
   expect(shift).toBeLessThan(0.01)
 })

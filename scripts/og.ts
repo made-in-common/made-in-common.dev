@@ -43,7 +43,7 @@ const html = `
 </div>`
 
 const { node, css } = fromHtml(html)
-const font = await readFile(new URL('../public/fonts/archivo-latin.woff2', import.meta.url))
+const font = await readFile(new URL('../app/assets/fonts/archivo-latin.woff2', import.meta.url))
 const png = await new Renderer().render(node, {
   width: 1200,
   height: 630,
