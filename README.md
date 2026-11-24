@@ -2,7 +2,7 @@
 
 The website for [Made in Common](https://github.com/made-in-common): open source tools for the web, looked after together.
 
-It is a fully static Nuxt site. The project list is read from the public repositories in the organisation at build time, along with each project's description, stars and last push. The maintainers of `made-in-common/<repo>` are the members of the organisation team with the same name as the repository.
+It is a fully static Nuxt site. The project list is read from the public repositories in the organisation at build time, along with each project's description, stars and last push. The maintainers of `made-in-common/<repo>` are the members of the organisation team with the same name as the repository. Until that team exists and has members, the maintainers listed in `shared/projects.ts` are shown.
 
 ## Setup
 
@@ -26,10 +26,11 @@ pnpm dev
 
 ## Content
 
-- `shared/projects.ts`: the category and npm name of each project, matched by repository name. Projects not yet in the organisation are listed from here, with their maintainers.
+- `shared/projects.ts`: the category, npm name and maintainers of each project, matched by repository name. Projects not yet in the organisation are listed from here.
 - `content/*.md`: the about, principles and join copy
 - `GOVERNANCE.md` and `CODE_OF_CONDUCT.md` in [`made-in-common/.github`](https://github.com/made-in-common/.github) are rendered at `/governance` and `/code-of-conduct`. A page and its footer link are left out until the file exists.
 - `scripts/og.ts`: renders `public/og.png` (run `pnpm og` after changing the project list)
+- `scripts/sync-teams.ts`: creates the team for each repository in the organisation, adds the maintainers from `shared/projects.ts` and gives the team the maintain role on its repository. `pnpm sync-teams` prints the changes, `pnpm sync-teams --apply` makes them, and `--prune` also removes members who are not listed. It needs a token that can manage teams (`gh auth refresh -s admin:org`).
 
 ## Testing
 

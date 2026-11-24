@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { content, projects, sponsors } from '#build/site-data.mjs'
-import type { Category } from '~~/shared/projects'
-import { categories } from '~~/shared/projects'
-import type { Sort } from '~~/shared/filter'
-import { filterProjects, sorts } from '~~/shared/filter'
+import type { Category } from '#shared/projects'
+import { categories } from '#shared/projects'
+import type { Sort } from '#shared/filter'
+import { filterProjects, sorts } from '#shared/filter'
 
 const sortLabels: Record<Sort, string> = {
   stars: 'Stars',

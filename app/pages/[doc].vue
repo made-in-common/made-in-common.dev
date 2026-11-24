@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { docs as available } from '#build/site-data.mjs'
-import { docs } from '~~/shared/docs'
+import { docs } from '#shared/docs'
 
 definePageMeta({
   validate: (route) => {
