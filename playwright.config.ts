@@ -15,6 +15,7 @@ export default defineConfig({
   },
   webServer: {
     command: `pnpm generate && pnpm preview --port ${port}`,
+    env: { SITE_DATA_OFFLINE: 'true' },
     url: `http://127.0.0.1:${port}`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

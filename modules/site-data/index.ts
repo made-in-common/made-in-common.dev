@@ -31,7 +31,7 @@ export default defineNuxtModule({
       let complete = true
       const options = {
         token: process.env.GITHUB_TOKEN || process.env.NUXT_GITHUB_TOKEN,
-        strict: !nuxt.options.dev && !nuxt.options.test,
+        strict: !nuxt.options.dev,
         warn: (message: string) => logger.warn(message),
         onFailure: () => { complete = false },
       }
@@ -41,7 +41,7 @@ export default defineNuxtModule({
     }
 
     async function loadGitHub() {
-      if (nuxt.options._prepare) {
+      if (nuxt.options._prepare || nuxt.options.test || process.env.SITE_DATA_OFFLINE === 'true') {
         return { data: { projects: projects.map(source => toProject(source)), docs: {}, sponsors: [] }, savedAt: Date.now() }
       }
       return cached<GitHubData>({
