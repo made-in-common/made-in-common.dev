@@ -61,3 +61,20 @@ test('restores filters from the URL', async ({ page }) => {
   await expect(page.getByRole('radio', { name: 'Name' })).toBeChecked()
   await expect(page.getByRole('article').first()).toHaveAccessibleName('bumpp')
 })
+
+test('inlines the stylesheets', async ({ page, request }) => {
+  const html = await (await request.get('/')).text()
+  const inlined = html.match(/<style>(.*?)<\/style>/s)?.[1]
+  expect(inlined).toContain('.masthead')
+  expect(inlined).toContain('archivo-latin.woff2')
+
+  const stylesheets: string[] = []
+  page.on('request', (request) => {
+    if (request.resourceType() === 'stylesheet') {
+      stylesheets.push(request.url())
+    }
+  })
+  await page.reload()
+  await page.waitForLoadState('networkidle')
+  expect(stylesheets).toEqual([])
+})
