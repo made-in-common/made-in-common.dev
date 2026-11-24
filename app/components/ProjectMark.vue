@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createMark, MARK_SIZE } from '~~/shared/mark'
+import { createMark, MARK_SIZE } from '#shared/mark'
 
 const props = defineProps<{
   name: string

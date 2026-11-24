@@ -12,10 +12,15 @@ function repo(fullName: string, extra: Record<string, unknown> = {}) {
   return { name, full_name: fullName, html_url: `https://github.com/${fullName}`, description: `${name} description`, stargazers_count: 1, ...extra }
 }
 
+const forbidden = () => new Response('{}', { status: 403, statusText: 'Forbidden' })
+
 function fakeGitHub(routes: Record<string, unknown>) {
   return vi.fn(async (input: string | URL | Request) => {
     const url = String(input).replace('https://api.github.com', '').replace('https://raw.githubusercontent.com', 'raw:')
     const path = url.replace(/[?&](type|per_page|page)=[^&]*/g, '')
+    if (routes[path] instanceof Response) {
+      return routes[path]
+    }
     return path in routes
       ? new Response(JSON.stringify(routes[path]))
       : new Response('{}', { status: 404, statusText: 'Not Found' })
@@ -68,18 +73,41 @@ describe('resolveProjects', () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('made-in-common/new-tool has no entry'))
   })
 
+  it('lists the maintainers from shared/projects.ts in a strict build when the team does not exist or has no members', async () => {
+    const fetch = fakeGitHub({
+      '/orgs/made-in-common/repos': [repo('made-in-common/beasties'), repo('made-in-common/taze')],
+      '/orgs/made-in-common/teams/beasties/members': [],
+    })
+    const warn = vi.fn()
+
+    const [beasties, taze] = await resolveProjects({ strict: true, warn, fetch, sources })
+
+    expect(beasties?.maintainers).toEqual(['danielroe'])
+    expect(taze?.maintainers).toEqual(['antfu', 'sxzz'])
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('made-in-common/beasties team has no members'))
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('made-in-common has no taze team'))
+  })
+
   it('fails a strict build when a team cannot be read', async () => {
-    const fetch = fakeGitHub({ '/orgs/made-in-common/repos': [repo('made-in-common/beasties')] })
+    const fetch = fakeGitHub({
+      '/orgs/made-in-common/repos': [repo('made-in-common/beasties')],
+      '/orgs/made-in-common/teams/beasties/members': forbidden(),
+    })
 
     await expect(resolveProjects({ strict: true, warn: vi.fn(), fetch, sources: [] }))
       .rejects.toThrow('made-in-common/beasties team')
   })
 
   it('falls back to the listed maintainers when a team cannot be read outside a strict build', async () => {
-    const fetch = fakeGitHub({ '/orgs/made-in-common/repos': [repo('made-in-common/taze')] })
+    const fetch = fakeGitHub({
+      '/orgs/made-in-common/repos': [repo('made-in-common/taze')],
+      '/orgs/made-in-common/teams/taze/members': forbidden(),
+    })
+    const onFailure = vi.fn()
 
-    const [taze] = await resolveProjects({ strict: false, warn: vi.fn(), fetch, sources })
+    const [taze] = await resolveProjects({ strict: false, warn: vi.fn(), onFailure, fetch, sources })
 
     expect(taze?.maintainers).toEqual(['antfu', 'sxzz'])
+    expect(onFailure).toHaveBeenCalled()
   })
 })
