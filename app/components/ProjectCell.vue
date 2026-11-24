@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Project } from '~~/shared/projects'
+import type { Project } from '#shared/projects'
 
 const props = defineProps<{
   project: Project

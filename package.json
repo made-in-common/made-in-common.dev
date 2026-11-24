@@ -15,6 +15,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "og": "node scripts/og.ts",
+    "sync-teams": "node scripts/sync-teams.ts",
     "postinstall": "nuxt prepare && simple-git-hooks",
     "test:types": "vue-tsc -b --noEmit",
     "test": "vitest",

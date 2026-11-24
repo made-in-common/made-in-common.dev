@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { docs as availableDocs, generatedAt } from '#build/site-data.mjs'
-import { docs } from '~~/shared/docs'
+import { docs } from '#shared/docs'
 
 const updated = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(generatedAt))
 const links = docs.filter(doc => availableDocs[doc.slug])

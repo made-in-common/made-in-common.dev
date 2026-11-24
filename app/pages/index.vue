@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { content, projects, sponsors } from '#build/site-data.mjs'
-import type { Category } from '~~/shared/projects'
-import { categories } from '~~/shared/projects'
-import type { Sort } from '~~/shared/filter'
-import { filterProjects, sorts } from '~~/shared/filter'
+import type { Category } from '#shared/projects'
+import { categories } from '#shared/projects'
+import type { Sort } from '#shared/filter'
+import { filterProjects, sorts } from '#shared/filter'
 
 const sortLabels: Record<Sort, string> = {
   stars: 'Stars',
@@ -19,6 +19,27 @@ const category = ref<Category>()
 const sort = ref<Sort>('stars')
 const maintainer = ref<string>()
 const preview = ref<string>()
+
+const categoryModel = computed({
+  get: () => category.value,
+  set: (value: Category | undefined) => startFilterTransition(() => {
+    category.value = value
+  }),
+})
+
+const sortModel = computed({
+  get: () => sort.value,
+  set: (value: Sort) => startFilterTransition(() => {
+    sort.value = value
+  }),
+})
+
+const logoIntroPlayed = useState('logo-intro-played', () => false)
+const playLogoIntro = !logoIntroPlayed.value
+
+onMounted(() => {
+  logoIntroPlayed.value = true
+})
 
 const results = computed(() => filterProjects(projects, {
   query: query.value,
@@ -111,15 +132,17 @@ const wallSection = useTemplateRef<HTMLElement>('wallSection')
 
 async function selectMaintainer(handle: string) {
   clearTimeout(clearPreviewTimer)
-  maintainer.value = handle
-  preview.value = undefined
-  await nextTick()
+  await startFilterTransition(() => {
+    maintainer.value = handle
+    preview.value = undefined
+  })
   maintainerChip.value?.focus()
 }
 
 async function removeMaintainer() {
-  maintainer.value = undefined
-  await nextTick()
+  await startFilterTransition(() => {
+    maintainer.value = undefined
+  })
   if (maintainerHint.value?.checkVisibility()) {
     maintainerHint.value.focus()
     return
@@ -128,10 +151,11 @@ async function removeMaintainer() {
 }
 
 async function clearFilters() {
-  query.value = ''
-  category.value = undefined
-  maintainer.value = undefined
-  await nextTick()
+  await startFilterTransition(() => {
+    query.value = ''
+    category.value = undefined
+    maintainer.value = undefined
+  })
   wallSection.value?.focus()
 }
 
@@ -166,7 +190,10 @@ useHead({
         :style="{ '--rail-top': `${railTop}px` }"
       >
         <header class="masthead">
-          <SiteLogo class="masthead__logo" />
+          <SiteLogo
+            class="masthead__logo"
+            :intro="playLogoIntro"
+          />
           <h1 class="masthead__title">
             Made in Common
           </h1>
@@ -207,7 +234,7 @@ useHead({
               <div class="choice__options">
                 <label class="chip">
                   <input
-                    v-model="category"
+                    v-model="categoryModel"
                     type="radio"
                     name="category"
                     :value="undefined"
@@ -220,7 +247,7 @@ useHead({
                   class="chip"
                 >
                   <input
-                    v-model="category"
+                    v-model="categoryModel"
                     type="radio"
                     name="category"
                     :value="entry.name"
@@ -314,7 +341,7 @@ useHead({
               class="sort"
             >
               <input
-                v-model="sort"
+                v-model="sortModel"
                 type="radio"
                 name="sort"
                 :value="option"
@@ -334,6 +361,7 @@ useHead({
             :key="project.repo"
             class="wall__item"
             :class="{ 'wall__item--lead': index === 0 }"
+            :style="{ viewTransitionName: getProjectTransitionName(project.name) }"
           >
             <ProjectCell
               :project="project"
@@ -347,7 +375,7 @@ useHead({
           </li>
           <li
             v-if="!isFiltered"
-            class="wall__item"
+            class="wall__item wall__item--vacant"
           >
             <div class="vacant">
               <ProjectMark
@@ -504,6 +532,7 @@ useHead({
 }
 
 .masthead__logo {
+  view-transition-name: site-logo;
   width: clamp(2.75rem, 5vw, 3.75rem);
   margin-bottom: clamp(1rem, 2vw, 1.5rem);
 }
@@ -654,16 +683,17 @@ useHead({
 }
 
 .sort > span {
+  transition: box-shadow 200ms ease;
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
   font-size: 0.9375rem;
-  border-bottom: 3px solid transparent;
+  box-shadow: inset 0 -3px transparent;
 }
 
 .sort input:checked + span {
   font-weight: 700;
-  border-bottom-color: var(--signal);
+  box-shadow: inset 0 -3px var(--signal);
 }
 
 .wall-section {
@@ -704,6 +734,7 @@ useHead({
 }
 
 .filter-chip {
+  view-transition-name: maintainer-filter;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -744,6 +775,14 @@ useHead({
   text-decoration: underline;
   text-underline-offset: 0.2em;
   cursor: pointer;
+}
+
+.wall__item {
+  view-transition-class: project;
+}
+
+.wall__item--vacant {
+  view-transition-name: project-vacant;
 }
 
 .wall {
@@ -914,6 +953,7 @@ useHead({
 }
 
 .sponsor__avatar {
+  transition: filter 200ms ease;
   width: 2rem;
   height: 2rem;
   background: var(--ghost);
@@ -1034,7 +1074,8 @@ useHead({
   }
 
   .sort input:checked + span {
-    border-bottom-color: Highlight;
+    text-decoration: underline 3px;
+    text-underline-offset: 0.35em;
   }
 }
 

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import ProjectCell from '~/components/ProjectCell.vue'
-import type { Project } from '~~/shared/projects'
+import type { Project } from '#shared/projects'
 
 const project: Project = {
   repo: 'made-in-common/example',

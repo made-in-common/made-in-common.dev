@@ -67,7 +67,10 @@ export default defineNuxtModule({
     addTemplate({
       filename: TEMPLATE,
       async getContents() {
-        github ||= loadGitHub()
+        github ||= loadGitHub().catch((error: Error) => {
+          logger.error(error.cause instanceof Error ? `${error.message} (${error.cause.message})` : error.message)
+          throw error
+        })
         const [{ data, savedAt }, content] = await Promise.all([github, readContent(contentDir)])
         return [
           `export const projects = ${JSON.stringify(data.projects)}`,
