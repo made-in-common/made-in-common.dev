@@ -707,6 +707,7 @@ useHead({
 .filter-chip__avatar {
   width: 1.5rem;
   height: 1.5rem;
+  border-radius: 50%;
   background: var(--ghost);
 }
 
@@ -899,6 +900,7 @@ useHead({
 .sponsor__avatar {
   width: 2rem;
   height: 2rem;
+  border-radius: 50%;
   background: var(--ghost);
   filter: grayscale(1);
 }
