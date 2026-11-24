@@ -839,6 +839,14 @@ useHead({
   letter-spacing: -0.035em;
   text-wrap: balance;
   max-width: 8ch;
+  min-width: min-content;
+}
+
+@media (max-width: 16rem) {
+  .band__title {
+    min-width: 0;
+    hyphens: auto;
+  }
 }
 
 .band__body {
