@@ -6,7 +6,6 @@ const props = defineProps<{
   lead?: boolean
   highlighted?: boolean
   dimmed?: boolean
-  /** Maintainer whose projects are being previewed. */
   preview?: string
 }>()
 
