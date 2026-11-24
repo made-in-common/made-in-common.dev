@@ -4,6 +4,7 @@ import type { Category } from '#shared/projects'
 import { categories } from '#shared/projects'
 import type { Sort } from '#shared/filter'
 import { filterProjects, sorts } from '#shared/filter'
+import { avatar } from '#shared/avatar'
 
 const sortLabels: Record<Sort, string> = {
   stars: 'Stars',
@@ -13,6 +14,7 @@ const sortLabels: Record<Sort, string> = {
 
 const route = useRoute()
 const router = useRouter()
+const { optimiseAvatars } = useRuntimeConfig().public
 
 const query = ref('')
 const category = ref<Category>()
@@ -267,10 +269,8 @@ if (import.meta.server) {
               >
                 <img
                   class="filter-chip__avatar"
-                  :src="`https://avatars.githubusercontent.com/${maintainer}?s=40`"
+                  v-bind="avatar(maintainer, 20, optimiseAvatars)"
                   alt=""
-                  width="20"
-                  height="20"
                 >
                 <span><span class="sr-only">Remove maintainer filter: </span>{{ maintainer }}</span>
                 <svg
@@ -457,10 +457,8 @@ if (import.meta.server) {
             >
               <img
                 class="sponsor__avatar"
-                :src="`https://avatars.githubusercontent.com/${login}?s=64`"
+                v-bind="avatar(login, 32, optimiseAvatars)"
                 alt=""
-                width="32"
-                height="32"
                 loading="lazy"
                 decoding="async"
               >

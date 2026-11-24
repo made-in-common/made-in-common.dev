@@ -38,6 +38,11 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/css/main.css', '~/assets/css/fallbacks.css'],
+  runtimeConfig: {
+    public: {
+      optimiseAvatars: !!process.env.VERCEL,
+    },
+  },
   experimental: {
     typedPages: true,
     viewTransition: true,

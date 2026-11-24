@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Project } from '#shared/projects'
+import { avatar } from '#shared/avatar'
 
 const props = defineProps<{
   project: Project
@@ -12,6 +13,8 @@ const emit = defineEmits<{
   preview: [handle: string | undefined]
   select: [handle: string]
 }>()
+
+const { optimiseAvatars } = useRuntimeConfig().public
 
 const monthFormat = new Intl.DateTimeFormat('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' })
 const numberFormat = new Intl.NumberFormat('en-GB')
@@ -62,10 +65,8 @@ const titleId = computed(() => `project-${props.project.name}`)
         >
           <img
             class="maintainer__avatar"
-            :src="`https://avatars.githubusercontent.com/${handle}?s=40`"
+            v-bind="avatar(handle, 20, optimiseAvatars)"
             alt=""
-            width="20"
-            height="20"
             loading="lazy"
             decoding="async"
           >

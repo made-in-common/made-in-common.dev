@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "images": {
+    "sizes": [20, 32, 40, 64],
+    "qualities": [75],
+    "remotePatterns": [
+      { "protocol": "https", "hostname": "avatars.githubusercontent.com" }
+    ],
+    "formats": ["image/webp"],
+    "minimumCacheTTL": 604800
+  }
+}
