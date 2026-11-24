@@ -85,6 +85,7 @@ useSeoMeta({ title: () => `${title.value} · Made in Common` })
 }
 
 .home__logo {
+  view-transition-name: site-logo;
   width: 3rem;
 }
 
