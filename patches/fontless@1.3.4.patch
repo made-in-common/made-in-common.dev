@@ -1,8 +1,40 @@
 diff --git a/dist/index.mjs b/dist/index.mjs
-index 6ac22216bc4a5cc19d2ccb4f53b5733c86898576..8f6c0844d9e6233f42731178d57fe866e44be609 100644
+index 6ac22216bc4a5cc19d2ccb4f53b5733c86898576..7ef92562f1ced0802cd407899ac1dafa2498448f 100644
 --- a/dist/index.mjs
 +++ b/dist/index.mjs
-@@ -959,7 +959,13 @@ function fontless(_options) {
+@@ -1,5 +1,5 @@
+ import { a as isSystemFontFamily, c as generateFontFallbacks, d as isFetchableURL, f as joinURL, i as extractGeneric, l as parseFont, n as extractEndOfFirstFamily, o as formatToExtension, r as extractFontFamilies, s as generateFontFace, t as addLocalFallbacks, u as relativiseFontSources } from "./parse-CbHnrH5T.mjs";
+-import { hash } from "node:crypto";
++import { hash, randomUUID } from "node:crypto";
+ import { dirname, join, posix, relative, resolve } from "node:path";
+ import { basename, dirname as dirname$1, extname } from "node:path/posix";
+ import { fileURLToPath, pathToFileURL } from "node:url";
+@@ -10,7 +10,7 @@ import { parse, walk } from "css-tree";
+ import { Buffer } from "node:buffer";
+ import MagicString from "magic-string";
+ import { AsyncLocalStorage } from "node:async_hooks";
+-import { access, mkdir, readFile, writeFile } from "node:fs/promises";
++import { access, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+ import { defu } from "defu";
+ import { cwd } from "node:process";
+ //#region src/logger.ts
+@@ -865,7 +865,14 @@ function keyToPath(base, key) {
+ }
+ async function write(path, contents) {
+ 	await mkdir(dirname(path), { recursive: true });
+-	await writeFile(path, contents);
++	const temporary = `${path}.${randomUUID()}.tmp`;
++	try {
++		await writeFile(temporary, contents);
++		await rename(temporary, path);
++	} catch (error) {
++		await rm(temporary, { force: true });
++		throw error;
++	}
+ }
+ async function read(path) {
+ 	try {
+@@ -959,7 +966,13 @@ function fontless(_options) {
  	async function loadFont(file, { url, init, subset, variationAxes }) {
  		if (url.startsWith("file://")) {
  			const font = await readFile(fileURLToPath(url));
