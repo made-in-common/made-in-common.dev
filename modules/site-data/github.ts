@@ -27,6 +27,15 @@ export interface ResolveOptions {
 
 const repoName = (repo: string) => repo.split('/').pop() ?? repo
 
+class GitHubError extends Error {
+  status: number
+
+  constructor(status: number, statusText: string) {
+    super(`${status} ${statusText}`)
+    this.status = status
+  }
+}
+
 export async function resolveProjects(options: ResolveOptions): Promise<Project[]> {
   const { strict, warn, fetch = globalThis.fetch, sources = projects } = options
   const headers: Record<string, string> = {
@@ -40,7 +49,7 @@ export async function resolveProjects(options: ResolveOptions): Promise<Project[
   async function get<T>(path: string): Promise<T> {
     const response = await fetch(`https://api.github.com${path}`, { headers })
     if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`)
+      throw new GitHubError(response.status, response.statusText)
     }
     return await response.json() as T
   }
@@ -88,10 +97,20 @@ export async function resolveProjects(options: ResolveOptions): Promise<Project[
     let maintainers = source?.maintainers ?? []
     try {
       const members = await get<{ login: string }[]>(`/orgs/${org}/teams/${repo.name}/members?per_page=100`)
-      maintainers = members.map(member => member.login)
+      if (members.length) {
+        maintainers = members.map(member => member.login)
+      }
+      else {
+        warn(`The ${org}/${repo.name} team has no members yet, so the maintainers in shared/projects.ts are listed.`)
+      }
     }
     catch (error) {
-      fail(`Could not read the members of the ${org}/${repo.name} team, which lists the maintainers of ${repo.full_name}. GITHUB_TOKEN needs read access to organisation members.`, error)
+      if (error instanceof GitHubError && error.status === 404) {
+        warn(`${org} has no ${repo.name} team, so the maintainers in shared/projects.ts are listed. Run pnpm sync-teams to create it.`)
+      }
+      else {
+        fail(`Could not read the members of the ${org}/${repo.name} team, which lists the maintainers of ${repo.full_name}. GITHUB_TOKEN needs read access to organisation members.`, error)
+      }
     }
     if (maintainers.length < 2) {
       warn(`${repo.full_name} lists ${maintainers.length} maintainer(s).`)
