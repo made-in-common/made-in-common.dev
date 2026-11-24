@@ -25,7 +25,6 @@ export default defineNuxtModule({
   setup(_options, nuxt) {
     const logger = useLogger('site-data')
     const contentDir = resolve(nuxt.options.rootDir, 'content')
-    let github: Promise<{ data: GitHubData, savedAt: number }> | undefined
     const offline = nuxt.options._prepare || nuxt.options.test || process.env.SITE_DATA_OFFLINE === 'true'
     const strict = !nuxt.options.dev
     const token = process.env.GITHUB_TOKEN
@@ -64,13 +63,15 @@ export default defineNuxtModule({
       })
     }
 
+    const github = loadGitHub().catch((error: Error) => {
+      logger.error(error.cause instanceof Error ? `${error.message} (${error.cause.message})` : error.message)
+      throw error
+    })
+    github.catch(() => {})
+
     addTemplate({
       filename: TEMPLATE,
       async getContents() {
-        github ||= loadGitHub().catch((error: Error) => {
-          logger.error(error.cause instanceof Error ? `${error.message} (${error.cause.message})` : error.message)
-          throw error
-        })
         const [{ data, savedAt }, content] = await Promise.all([github, readContent(contentDir)])
         return [
           `export const projects = ${JSON.stringify(data.projects)}`,

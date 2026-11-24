@@ -1,0 +1,18 @@
+diff --git a/dist/module.mjs b/dist/module.mjs
+index 2ae4002463a9ee47d226b7118393ae4be246c4b3..0ad8daf431fe4166fcd25ef3ea8c84772fc99841 100644
+--- a/dist/module.mjs
++++ b/dist/module.mjs
+@@ -1,5 +1,4 @@
+ import { fileURLToPath } from 'node:url';
+-import { createOnboarding } from '@devframes/hub-ui-onboard';
+ import { defineNuxtModule, tryResolveModule, installModule, logger } from '@nuxt/kit';
+ import { readPackageJSON } from 'pkg-types';
+ import process from 'node:process';
+@@ -65,6 +64,7 @@ const module$1 = defineNuxtModule({
+     }
+     if (!nuxt.options.dev)
+       return;
++    const { createOnboarding } = await import('@devframes/hub-ui-onboard');
+     const onboarding = createOnboarding({
+       cwd: nuxt.options.rootDir,
+       base: BASE,

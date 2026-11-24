@@ -1,0 +1,57 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index d64328e09e23e250a746a34b47250f8c5bcaf561..f84432027af83283ef462199cc4e79c4f70d2c34 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1739,7 +1739,32 @@ async function generateApp(nuxt, app, options = {}) {
+ 		}
+ 	}
+ 	const compileStart = performance.now();
++	const canDefer = !nuxt.options.dev && !nuxt.options._prepare;
++	async function processOrDefer(templates) {
++		const tasks = templates.map((template) => {
++			const task = { template, done: false };
++			task.promise = processTemplate(template).finally(() => {
++				task.done = true;
++			});
++			return task;
++		});
++		const all = Promise.allSettled(tasks.map((task) => task.promise));
++		const written = Promise.allSettled(tasks.filter((task) => task.template.write).map((task) => task.promise));
++		await Promise.race([all, written.then(() => new Promise((resolve) => setTimeout(resolve, 50)))]);
++		for (const task of tasks) {
++			if (task.done) continue;
++			const fullPath = task.template.dst || resolve(nuxt.options.buildDir, task.template.filename);
++			const aliasPath = "#build/" + task.template.filename;
++			nuxt._deferredTemplates ||= /* @__PURE__ */ new Map();
++			nuxt._deferredTemplates.set(fullPath, task.promise);
++			nuxt._deferredTemplates.set(aliasPath, task.promise);
++			nuxt.vfs[fullPath] ??= "";
++			nuxt.vfs[aliasPath] ??= "";
++			task.promise.catch(() => {});
++		}
++	}
+ 	for (const templates of [filteredTemplates.pre, filteredTemplates.post]) if (debugTemplates) for (const template of templates) await processTemplate(template).catch(() => {});
++	else if (canDefer) await processOrDefer(templates);
+ 	else await Promise.allSettled(templates.map(processTemplate));
+ 	const compileTime = performance.now() - compileStart;
+ 	if (!debugTemplates && compileTime > 500) logger.info(`Generating templates took ${Math.round(compileTime)}ms. Set \`debug: { templates: true }\` to see how long each template took.`);
+@@ -1877,6 +1902,7 @@ async function annotatePlugins(nuxt, plugins) {
+ 		reportMetadataFallback(linkToAlias(plugin.src, nuxt), reason);
+ 	};
+ 	for (const plugin of plugins) try {
++		await nuxt._deferredTemplates?.get(plugin.src);
+ 		const meta = await extractMetadata(nuxt.vfs[plugin.src] ?? await promises.readFile(plugin.src, "utf-8"), IS_TSX.test(plugin.src) ? "tsx" : "ts");
+ 		_plugins.push({
+ 			...meta,
+@@ -13195,8 +13221,10 @@ const VirtualFSPlugin = (nuxt, options) => createUnplugin((_, meta) => {
+ 		} },
+ 		load: {
+ 			filter: { id: PREFIX_RE },
+-			handler(id) {
++			async handler(id) {
+ 				const key = withoutQuery(fromVirtualId(id, nuxt));
++				const deferred = nuxt._deferredTemplates?.get(key);
++				if (deferred) await deferred;
+ 				return {
+ 					code: nuxt.vfs[key] || "",
+ 					map: null

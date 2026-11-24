@@ -1,0 +1,19 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 6ac22216bc4a5cc19d2ccb4f53b5733c86898576..8f6c0844d9e6233f42731178d57fe866e44be609 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -959,7 +959,13 @@ function fontless(_options) {
+ 	async function loadFont(file, { url, init, subset, variationAxes }) {
+ 		if (url.startsWith("file://")) {
+ 			const font = await readFile(fileURLToPath(url));
+-			return subset ? subsetFontData(font, subset, url, variationAxes) : font;
++			if (!subset) return font;
++			const subsetKey = `data:subsets:${hash("sha256", JSON.stringify([hash("sha256", font, "base64url"), subset, variationAxes ?? null]), "base64url")}`;
++			const cachedSubset = await storage.getItemRaw(subsetKey);
++			if (cachedSubset) return cachedSubset;
++			const subsetted = await subsetFontData(font, subset, url, variationAxes);
++			if (subsetted !== font) await storage.setItemRaw(subsetKey, subsetted);
++			return subsetted;
+ 		}
+ 		const key = `data:fonts:${file}`;
+ 		const cached = await storage.getItemRaw(key);
