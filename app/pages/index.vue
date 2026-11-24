@@ -8,7 +8,7 @@ import { filterProjects, sorts } from '~~/shared/filter'
 const sortLabels: Record<Sort, string> = {
   stars: 'Stars',
   name: 'Name',
-  recent: 'Recent activity',
+  recent: 'Recent',
 }
 
 const route = useRoute()
@@ -69,6 +69,27 @@ onMounted(() => {
   })
 })
 
+const rail = useTemplateRef<HTMLElement>('rail')
+const railTop = ref(0)
+
+function updateRailTop() {
+  if (!rail.value) return
+  railTop.value = Math.min(0, window.innerHeight - rail.value.offsetHeight)
+}
+
+let railObserver: ResizeObserver | undefined
+
+onMounted(() => {
+  railObserver = new ResizeObserver(updateRailTop)
+  if (rail.value) railObserver.observe(rail.value)
+  window.addEventListener('resize', updateRailTop)
+})
+
+onBeforeUnmount(() => {
+  railObserver?.disconnect()
+  window.removeEventListener('resize', updateRailTop)
+})
+
 const maintainerChip = useTemplateRef<HTMLButtonElement>('maintainerChip')
 const maintainerHint = useTemplateRef<HTMLParagraphElement>('maintainerHint')
 const wallSection = useTemplateRef<HTMLElement>('wallSection')
@@ -83,7 +104,11 @@ async function selectMaintainer(handle: string) {
 async function removeMaintainer() {
   maintainer.value = undefined
   await nextTick()
-  maintainerHint.value?.focus()
+  if (maintainerHint.value?.checkVisibility()) {
+    maintainerHint.value.focus()
+    return
+  }
+  document.querySelector<HTMLInputElement>('#project-search')?.focus()
 }
 
 async function clearFilters() {
@@ -100,7 +125,9 @@ useSeoMeta({
   ogTitle: 'Made in Common',
   ogDescription: 'Open source tools for the web, looked after together.',
   ogImage: 'https://made-in-common.dev/og.png',
-  ogUrl: 'https://made-in-common.dev',
+  ogUrl: 'https://made-in-common.dev/',
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
   twitterCard: 'summary_large_image',
 })
 
@@ -117,7 +144,11 @@ useHead({
     >Skip to projects</a>
 
     <div class="projects">
-      <div class="rail">
+      <div
+        ref="rail"
+        class="rail"
+        :style="{ '--rail-top': `${railTop}px` }"
+      >
         <header class="masthead">
           <SiteLogo class="masthead__logo" />
           <h1 class="masthead__title">
@@ -185,6 +216,7 @@ useHead({
 
             <div
               class="field"
+              :class="{ 'field--empty': !maintainer }"
               role="group"
               aria-labelledby="maintainer-label"
             >
@@ -232,38 +264,8 @@ useHead({
                 Choose a name on any project to see everything they look after.
               </p>
             </div>
-
-            <fieldset class="choice">
-              <legend class="field__label">
-                Sort by
-              </legend>
-              <div class="choice__options choice__options--inline">
-                <label
-                  v-for="option in sorts"
-                  :key="option"
-                  class="sort"
-                >
-                  <input
-                    v-model="sort"
-                    type="radio"
-                    name="sort"
-                    :value="option"
-                  >
-                  <span>{{ sortLabels[option] }}</span>
-                </label>
-              </div>
-            </fieldset>
           </form>
         </div>
-
-        <nav
-          class="rail__nav"
-          aria-label="Site"
-        >
-          <a href="#how">How projects are run</a>
-          <a href="#join">Get involved</a>
-          <a href="https://github.com/made-in-common">GitHub</a>
-        </nav>
       </div>
 
       <main
@@ -282,6 +284,28 @@ useHead({
           >
             {{ status }}
           </p>
+          <fieldset class="sorter">
+            <legend class="sr-only">
+              Sort by
+            </legend>
+            <span
+              class="sorter__label"
+              aria-hidden="true"
+            >Sort</span>
+            <label
+              v-for="option in sorts"
+              :key="option"
+              class="sort"
+            >
+              <input
+                v-model="sort"
+                type="radio"
+                name="sort"
+                :value="option"
+              >
+              <span>{{ sortLabels[option] }}</span>
+            </label>
+          </fieldset>
         </div>
 
         <ul
@@ -543,8 +567,23 @@ useHead({
   gap: 0.5rem;
 }
 
-.choice__options--inline {
-  gap: 0.25rem 1.25rem;
+.sorter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 1rem;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+.sorter__label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-stretch: var(--wide);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .chip,
@@ -601,27 +640,13 @@ useHead({
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   border-bottom: 3px solid transparent;
 }
 
 .sort input:checked + span {
   font-weight: 700;
   border-bottom-color: var(--signal);
-}
-
-.rail__nav {
-  display: none;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  margin-top: auto;
-  font-size: 1rem;
-}
-
-.rail__nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.75rem;
 }
 
 .wall-section {
@@ -917,21 +942,11 @@ useHead({
 }
 
 @media (min-width: 64rem) {
-  .rail__nav {
-    display: flex;
-  }
-
   .projects {
     grid-template-columns: minmax(20rem, 1fr) minmax(0, 2fr);
   }
 
   .rail {
-    position: sticky;
-    top: 0;
-    align-self: start;
-    max-height: 100vh;
-    max-height: 100dvh;
-    overflow-y: auto;
     border-bottom: 0;
   }
 
@@ -946,6 +961,50 @@ useHead({
 
   .band__title {
     padding-right: var(--gutter);
+  }
+}
+
+@media (min-width: 64rem) {
+  .rail {
+    position: sticky;
+    top: var(--rail-top, 0);
+    align-self: start;
+  }
+}
+
+@media (min-width: 64rem) and (max-height: 50rem) {
+  .rail {
+    gap: 1.25rem;
+    padding-block: 1.5rem;
+  }
+
+  .masthead__logo {
+    margin-bottom: 0.75rem;
+  }
+
+  .masthead__title {
+    font-size: min(clamp(2.75rem, 6.5vw, 6rem), 22cqi, 9vh);
+  }
+
+  .masthead__lede {
+    margin-top: 0.75rem;
+    font-size: 1.125rem;
+  }
+
+  .field__input {
+    height: 2.5rem;
+  }
+
+  .chip > span {
+    min-height: 2.25rem;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 64rem) and (max-height: 40rem) {
+  .field--empty {
+    display: none;
   }
 }
 

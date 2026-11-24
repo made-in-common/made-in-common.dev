@@ -222,6 +222,7 @@ const titleId = computed(() => `project-${props.project.name}`)
   grid-area: meta;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0 1rem;
   margin-top: 0.375rem;
   padding-top: 0.5rem;
@@ -230,12 +231,15 @@ const titleId = computed(() => `project-${props.project.name}`)
   color: var(--muted);
 }
 
-.cell__meta a {
-  position: relative;
-  z-index: 1;
+.cell__meta > * {
   display: inline-flex;
   align-items: center;
   min-height: 1.5rem;
+}
+
+.cell__meta a {
+  position: relative;
+  z-index: 1;
   color: var(--ink);
 }
 
