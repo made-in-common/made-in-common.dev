@@ -37,7 +37,7 @@ export default defineNuxtConfig({
       ],
     },
   },
-  css: ['~/assets/css/main.css', '~/assets/css/fallbacks.css'],
+  css: ['~/assets/css/main.css'],
   runtimeConfig: {
     public: {
       optimiseAvatars: !!process.env.VERCEL,
@@ -54,6 +54,14 @@ export default defineNuxtConfig({
   vite: {
     plugins: [
       fontless({
+        defaults: {
+          fallbackInstances: [
+            { weight: 600 },
+            { weight: 700 },
+            { weight: 800 },
+            { weight: 700, stretch: '125%' },
+          ],
+        },
         families: [
           archivo('archivo-latin', 'U+0020-007E, U+00A0, U+00B7, U+2009, U+2013-2014, U+2018-2019, U+201C-201D, U+2026', true),
           archivo('archivo-latin', 'U+00A1-00B6, U+00B8-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-2008, U+200A-2012, U+2015-2017, U+201A-201B, U+201E-2025, U+2027-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'),

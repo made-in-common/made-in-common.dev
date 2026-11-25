@@ -4,9 +4,16 @@ allowBuilds:
   simple-git-hooks: true
   unrs-resolver: false
 minimumReleaseAgeExclude:
-  - '@nuxt/kit-nightly@5.0.0-2611221443-187e8c3'
-  - '@nuxt/nitro-server-nightly@5.0.0-2611221443-187e8c3'
-  - '@nuxt/schema-nightly@5.0.0-2611221443-187e8c3'
-  - '@nuxt/vite-builder-nightly@5.0.0-2611221443-187e8c3'
-  - '@nuxt/vite-server-nightly@5.0.0-2611221443-187e8c3'
-  - nuxt-nightly@5.0.0-2611221443-187e8c3
+  - '@nuxt/kit-nightly@5.0.0-2611251001-c21a73c'
+  - '@nuxt/nitro-server-nightly@5.0.0-2611251001-c21a73c'
+  - '@nuxt/schema-nightly@5.0.0-2611251001-c21a73c'
+  - '@nuxt/vite-builder-nightly@5.0.0-2611251001-c21a73c'
+  - '@nuxt/vite-server-nightly@5.0.0-2611251001-c21a73c'
+  - nuxt-nightly@5.0.0-2611251001-c21a73c
+  - '@nuxt/devtools-assets@4.2.1'
+  - '@nuxt/devtools-kit@4.2.1'
+  - '@nuxt/devtools-onboard@4.2.1'
+  - '@nuxt/cli-nightly@4.1.0-2611242138-9b35b71'
+  - '@nuxt/devtools@4.2.1'
+  - fontaine@1.1.0
+  - fontless@1.4.0

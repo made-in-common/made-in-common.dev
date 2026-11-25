@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { readdir, readFile } from 'node:fs/promises'
 import { basename, join, resolve } from 'node:path'
-import { addTemplate, defineNuxtModule, updateTemplates, useLogger } from 'nuxt/kit'
+import { addTemplate, addVitePlugin, defineNuxtModule, useLogger } from 'nuxt/kit'
 import { parseMarkdown } from 'comark'
 import type { MarkdownDocument } from 'comark'
 import type { DocSlug } from '../../shared/docs.ts'
@@ -12,6 +12,8 @@ import { fetchDocs } from './docs.ts'
 import { resolveProjects, resolveSponsors, toProject } from './github.ts'
 
 const TEMPLATE = 'site-data.mjs'
+const VIRTUAL_ID = `\0${TEMPLATE}`
+const MODULE_RE = /site-data\.mjs$/
 const CACHE_TTL = 60 * 60 * 1000
 
 interface GitHubData {
@@ -25,7 +27,6 @@ export default defineNuxtModule({
   setup(_options, nuxt) {
     const logger = useLogger('site-data')
     const contentDir = resolve(nuxt.options.rootDir, 'content')
-    let github: Promise<{ data: GitHubData, savedAt: number }> | undefined
     const offline = nuxt.options._prepare || nuxt.options.test || process.env.SITE_DATA_OFFLINE === 'true'
     const strict = !nuxt.options.dev
     const token = process.env.GITHUB_TOKEN
@@ -64,21 +65,50 @@ export default defineNuxtModule({
       })
     }
 
-    addTemplate({
-      filename: TEMPLATE,
-      async getContents() {
-        github ||= loadGitHub().catch((error: Error) => {
-          logger.error(error.cause instanceof Error ? `${error.message} (${error.cause.message})` : error.message)
-          throw error
+    const github = loadGitHub().catch((error: Error) => {
+      logger.error(error.cause instanceof Error ? `${error.message} (${error.cause.message})` : error.message)
+      throw error
+    })
+    github.catch(() => {})
+
+    const aliasedPath = resolve(nuxt.options.buildDir, TEMPLATE)
+    const isContent = (path: string) => resolve(nuxt.options.srcDir, path).startsWith(contentDir) || resolve(nuxt.options.rootDir, path).startsWith(contentDir)
+
+    async function getContents() {
+      const [{ data, savedAt }, content] = await Promise.all([github, readContent(contentDir)])
+      return [
+        `export const projects = ${JSON.stringify(data.projects)}`,
+        `export const docs = ${JSON.stringify(data.docs)}`,
+        `export const sponsors = ${JSON.stringify(data.sponsors)}`,
+        `export const content = ${JSON.stringify(content)}`,
+        `export const generatedAt = ${JSON.stringify(new Date(savedAt).toISOString())}`,
+      ].join('\n')
+    }
+
+    let contents: Promise<string> | undefined
+
+    addVitePlugin({
+      name: 'site-data',
+      resolveId: {
+        filter: { id: MODULE_RE },
+        handler: source => source === VIRTUAL_ID || source === `#build/${TEMPLATE}` || resolve(source) === aliasedPath ? VIRTUAL_ID : undefined,
+      },
+      load: {
+        filter: { id: MODULE_RE },
+        handler: id => id === VIRTUAL_ID ? contents ||= getContents() : undefined,
+      },
+      configureServer(server) {
+        nuxt.hook('builder:watch', async (_event, path) => {
+          if (!isContent(path)) {
+            return
+          }
+          contents = undefined
+          const module = server.moduleGraph.getModuleById(VIRTUAL_ID)
+          if (module) {
+            server.moduleGraph.invalidateModule(module)
+            await server.reloadModule(module)
+          }
         })
-        const [{ data, savedAt }, content] = await Promise.all([github, readContent(contentDir)])
-        return [
-          `export const projects = ${JSON.stringify(data.projects)}`,
-          `export const docs = ${JSON.stringify(data.docs)}`,
-          `export const sponsors = ${JSON.stringify(data.sponsors)}`,
-          `export const content = ${JSON.stringify(content)}`,
-          `export const generatedAt = ${JSON.stringify(new Date(savedAt).toISOString())}`,
-        ].join('\n')
       },
     })
 
@@ -99,11 +129,6 @@ export default defineNuxtModule({
     })
 
     nuxt.options.watch.push(contentDir)
-    nuxt.hook('builder:watch', async (_event, path) => {
-      if (resolve(nuxt.options.srcDir, path).startsWith(contentDir) || resolve(nuxt.options.rootDir, path).startsWith(contentDir)) {
-        await updateTemplates({ filter: template => template.filename === TEMPLATE })
-      }
-    })
   },
 })
 

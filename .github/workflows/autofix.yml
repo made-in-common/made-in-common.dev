@@ -26,6 +26,9 @@ jobs:
       - name: 📦 Install browsers
         run: pnpm playwright install
 
+      - name: 🛠 Prepare Nuxt
+        run: pnpm nuxt prepare
+
       - name: 🔠 Fix lint errors
         run: pnpm lint --fix
 
