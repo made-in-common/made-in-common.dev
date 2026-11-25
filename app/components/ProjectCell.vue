@@ -193,6 +193,7 @@ const titleId = computed(() => `project-${props.project.name}`)
 .maintainer__avatar {
   width: 1.25rem;
   height: 1.25rem;
+  border-radius: 50%;
   filter: grayscale(1);
   background: var(--ghost);
 }

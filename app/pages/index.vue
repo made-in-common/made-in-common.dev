@@ -741,6 +741,7 @@ if (import.meta.server) {
 .filter-chip__avatar {
   width: 1.5rem;
   height: 1.5rem;
+  border-radius: 50%;
   background: var(--ghost);
 }
 
@@ -950,6 +951,7 @@ if (import.meta.server) {
   transition: filter 200ms ease;
   width: 2rem;
   height: 2rem;
+  border-radius: 50%;
   background: var(--ghost);
   filter: grayscale(1);
 }
