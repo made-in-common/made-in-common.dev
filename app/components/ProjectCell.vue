@@ -7,6 +7,7 @@ const props = defineProps<{
   lead?: boolean
   highlighted?: boolean
   dimmed?: boolean
+  preview?: string
 }>()
 
 const emit = defineEmits<{
@@ -57,6 +58,7 @@ const titleId = computed(() => `project-${props.project.name}`)
         <button
           type="button"
           class="maintainer"
+          :class="{ 'maintainer--active': handle === preview }"
           @click="emit('select', handle)"
           @mouseenter="emit('preview', handle)"
           @mouseleave="emit('preview', undefined)"
@@ -107,15 +109,17 @@ const titleId = computed(() => `project-${props.project.name}`)
   padding: 1rem 1.125rem 0.875rem;
   border-right: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
-  transition: box-shadow 150ms var(--ease-out);
 }
 
-.cell--highlighted {
-  box-shadow: inset 0 0 0 4px var(--signal);
+.cell__name,
+.cell__description,
+.cell__maintainers,
+.cell__meta {
+  transition: color 200ms ease, opacity 200ms ease;
 }
 
 .cell--dimmed .cell__mark {
-  opacity: 0.2;
+  opacity: 0.25;
 }
 
 .cell--dimmed .cell__name,
@@ -123,10 +127,15 @@ const titleId = computed(() => `project-${props.project.name}`)
   color: var(--muted);
 }
 
+.cell--dimmed .cell__maintainers,
+.cell--dimmed .cell__meta {
+  opacity: 0.6;
+}
+
 .cell__mark {
   grid-area: mark;
   width: 2.75rem;
-  transition: opacity 150ms ease;
+  transition: opacity 200ms ease;
 }
 
 .cell__name {
@@ -215,8 +224,26 @@ const titleId = computed(() => `project-${props.project.name}`)
 }
 
 .maintainer:hover .maintainer__avatar,
-.maintainer:focus-visible .maintainer__avatar {
+.maintainer:focus-visible .maintainer__avatar,
+.maintainer--active .maintainer__avatar {
   filter: none;
+}
+
+.maintainer--active span {
+  text-decoration: underline;
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell__mark,
+  .cell__name,
+  .cell__description,
+  .cell__maintainers,
+  .cell__meta {
+    transition: none;
+  }
 }
 
 .cell__meta {
