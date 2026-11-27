@@ -31,10 +31,12 @@ describe('ProjectCell', () => {
     expect(wrapper.text()).not.toContain('Looking for maintainers')
   })
 
-  it('should mark a project with fewer than two maintainers as looking for maintainers', async () => {
-    const wrapper = await mountSuspended(ProjectCell, { props: { project: { ...project, maintainers: ['danielroe'] } } })
+  it('should only mark a project as looking for maintainers when it asks for them', async () => {
+    const solo = await mountSuspended(ProjectCell, { props: { project: { ...project, maintainers: ['danielroe'] } } })
+    const asking = await mountSuspended(ProjectCell, { props: { project: { ...project, lookingForMaintainers: true } } })
 
-    expect(wrapper.get('.cell__maintainers').text()).toContain('Looking for maintainers')
+    expect(solo.text()).not.toContain('Looking for maintainers')
+    expect(asking.get('.cell__maintainers').text()).toContain('Looking for maintainers')
   })
 
   it('should emit preview and select for a maintainer', async () => {

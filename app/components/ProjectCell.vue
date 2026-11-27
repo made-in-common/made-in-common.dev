@@ -74,7 +74,7 @@ const titleId = computed(() => `project-${props.project.name}`)
         </button>
       </li>
       <li
-        v-if="project.maintainers.length < 2"
+        v-if="project.lookingForMaintainers"
         class="cell__wanted"
       >
         Looking for maintainers

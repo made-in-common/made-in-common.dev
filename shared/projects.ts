@@ -28,6 +28,8 @@ export interface ProjectSource {
    * repository, and the site lists that team's members once it has any.
    */
   maintainers: string[]
+  /** Whether the maintainers have asked for more people to help look after the project. */
+  lookingForMaintainers?: boolean
 }
 
 export interface Project extends ProjectSource {

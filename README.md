@@ -26,7 +26,7 @@ pnpm dev
 
 ## Content
 
-- `shared/projects.ts`: the category, npm name and maintainers of each project, matched by repository name. Projects not yet in the organisation are listed from here.
+- `shared/projects.ts`: the category, npm name and maintainers of each project, and whether it is looking for more maintainers, matched by repository name. Projects not yet in the organisation are listed from here.
 - `content/*.md`: the about, principles and join copy
 - `GOVERNANCE.md` and `CODE_OF_CONDUCT.md` in [`made-in-common/.github`](https://github.com/made-in-common/.github) are rendered at `/governance` and `/code-of-conduct`. A page and its footer link are left out until the file exists.
 - `scripts/og.ts`: renders `public/og.png` (run `pnpm og` after changing the project list)

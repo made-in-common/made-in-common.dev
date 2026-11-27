@@ -119,6 +119,7 @@ export async function resolveProjects(options: ResolveOptions): Promise<Project[
       warn(`${repo.full_name} has no entry in shared/projects.ts, so it is listed under Other.`)
     }
     return toProject({
+      ...source,
       repo: repo.full_name,
       npm: source ? source.npm : await readNpmName(repo),
       category: source?.category ?? 'Other',

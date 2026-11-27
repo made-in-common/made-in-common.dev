@@ -3,7 +3,7 @@ import { resolveProjects, resolveSponsors } from '../../modules/site-data/github
 import type { ProjectSource } from '../../shared/projects.ts'
 
 const sources: ProjectSource[] = [
-  { repo: 'danielroe/beasties', npm: 'beasties', category: 'Fonts & CSS', maintainers: ['danielroe'] },
+  { repo: 'danielroe/beasties', npm: 'beasties', category: 'Fonts & CSS', maintainers: ['danielroe'], lookingForMaintainers: true },
   { repo: 'antfu-collective/taze', npm: 'taze', category: 'Packages & releases', maintainers: ['antfu', 'sxzz'] },
 ]
 
@@ -70,6 +70,7 @@ describe('resolveProjects', () => {
       ['made-in-common/new-tool', 'Other', 'new-tool', ['a', 'b']],
       ['antfu-collective/taze', 'Packages & releases', 'taze', ['antfu', 'sxzz']],
     ])
+    expect(result.map(project => project.lookingForMaintainers)).toEqual([true, undefined, undefined])
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('made-in-common/new-tool has no entry'))
   })
 
