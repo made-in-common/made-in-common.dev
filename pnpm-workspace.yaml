@@ -17,3 +17,4 @@ minimumReleaseAgeExclude:
   - '@nuxt/devtools@4.2.1'
   - fontaine@1.1.0
   - fontless@1.4.0
+  - beasties@0.5.7
